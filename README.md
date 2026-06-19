@@ -19,7 +19,7 @@ React UI
     -> JSON response
 
 FastAPI /train
-  -> demo historical data
+  -> real international results dataset
   -> XGBoost or sklearn fallback training
   -> MLflow metrics and artifact logging
 ```
@@ -47,7 +47,7 @@ Services:
 - PostgreSQL: `localhost:5432`
 - Redis: `localhost:6379`
 
-The backend creates tables and seeds synthetic/demo teams, ratings, and match results on startup. This keeps the MVP usable without external football API credentials.
+The backend creates tables and imports a real international match-results CSV on startup. Demo data remains only as a fallback if the real CSV is unavailable.
 
 ## Environment
 
@@ -64,6 +64,9 @@ Important variables:
 - `MLFLOW_TRACKING_URI`
 - `CORS_ORIGINS`
 - `XGBOOST_MODEL_VERSION`
+- `USE_REAL_DATASET`
+- `REAL_DATASET_PATH`
+- `TRAINING_MATCH_LIMIT`
 - `VITE_API_URL`
 
 ## API
@@ -136,9 +139,35 @@ npm run dev
 npm test
 ```
 
+## Dataset
+
+The app now includes a real international football results CSV at `backend/app/data/international_results.csv`.
+
+Source: [`martj42/international_results`](https://github.com/martj42/international_results), downloaded from the repository's raw `results.csv`.
+
+Imported columns:
+
+- `date`
+- `home_team`
+- `away_team`
+- `home_score`
+- `away_score`
+- `tournament`
+- `city`
+- `country`
+- `neutral`
+
+At import time, the backend:
+
+- Creates teams from real national team names.
+- Stores real historical matches.
+- Computes Elo-style ratings from match results.
+- Derives rank and points fields from those Elo ratings.
+- Uses the most recent `TRAINING_MATCH_LIMIT` matches for model training. The default is `1000` so the MVP training endpoint stays responsive while PostgreSQL still stores the full imported dataset.
+
 ## Data Limitations
 
-The included dataset is synthetic/demo data and is intentionally small. Real production use should plug in a reliable match-results provider, up-to-date Elo or SPI-style ratings, FIFA ranking snapshots, squad availability, travel/rest data, and tournament context.
+The match results are real, but FIFA ranking snapshots, player availability, squads, injuries, travel, rest days, betting markets, and lineup information are not connected yet. FIFA rank and points fields are currently derived from computed Elo ratings so the feature schema stays stable.
 
 ## Future Improvements
 
