@@ -31,7 +31,7 @@ def explain_prediction(team_a: Team, team_b: Team, features: dict[str, float], p
         reasons.append("better recent attacking output")
     if not reasons:
         reasons.append("a balanced profile across ratings and recent results")
-    return f"{leader} is favored because of {', '.join(reasons)}. This MVP uses synthetic/demo data until a real data provider is connected."
+    return f"{leader} is favored because of {', '.join(reasons)}. The model uses real historical international match results with Elo-derived ratings."
 
 
 def predict_match(

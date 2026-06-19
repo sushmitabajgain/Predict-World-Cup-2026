@@ -142,6 +142,7 @@ npm test
 ## Dataset
 
 The app now includes a real international football results CSV at `backend/app/data/international_results.csv`.
+The historical dataset remains broad for model training, but the user-facing `/teams` endpoint and `/predict` workflow are filtered to the 48 participating countries in the 2026 World Cup.
 
 Source: [`martj42/international_results`](https://github.com/martj42/international_results), downloaded from the repository's raw `results.csv`.
 

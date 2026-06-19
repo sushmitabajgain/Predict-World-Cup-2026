@@ -7,12 +7,17 @@ from app.schemas.prediction import PredictionResponse
 from app.services.cache import features_key, prediction_key
 from app.services.predictions import response_to_create, save_prediction
 from app.services.teams import get_team_by_name
+from app.services.world_cup_2026 import is_world_cup_2026_participant
 
 
 def validate_input(state: PredictionAgentState) -> PredictionAgentState:
     request = state["request"]
     if request.team_a.casefold() == request.team_b.casefold():
         raise ValueError("Team A and Team B must be different")
+    if not is_world_cup_2026_participant(request.team_a):
+        raise ValueError(f"{request.team_a} is not a 2026 World Cup participant")
+    if not is_world_cup_2026_participant(request.team_b):
+        raise ValueError(f"{request.team_b} is not a 2026 World Cup participant")
     return state
 
 

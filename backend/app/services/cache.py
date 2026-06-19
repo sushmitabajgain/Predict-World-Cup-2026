@@ -37,7 +37,7 @@ class CacheService:
 
 
 def teams_key() -> str:
-    return "teams:all:v2"
+    return "teams:world-cup-2026:v1"
 
 
 def prediction_key(team_a: str, team_b: str, match_date: str) -> str:
