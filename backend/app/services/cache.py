@@ -46,3 +46,8 @@ def prediction_key(team_a: str, team_b: str, match_date: str) -> str:
 
 def features_key(team_a: str, team_b: str, match_date: str) -> str:
     return f"features:{team_a.lower()}:{team_b.lower()}:{match_date}"
+
+
+def worldcup_cache_key(resource: str, *parts: object) -> str:
+    suffix = ":".join(str(part).lower().replace(" ", "-") for part in parts if part is not None and part != "")
+    return f"worldcup:api-football:{resource}{':' + suffix if suffix else ''}:v1"

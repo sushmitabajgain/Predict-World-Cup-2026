@@ -25,6 +25,10 @@ class Settings(BaseSettings):
     real_dataset_path: Path = Path("app/data/international_results.csv")
     training_match_limit: int = 1000
     seed_demo_data: bool = True
+    api_football_key: str | None = None
+    api_football_base_url: str = "https://v3.football.api-sports.io"
+    api_football_league: int = 1
+    api_football_season: int = 2026
     sports_api_provider: str | None = None
     sports_api_base_url: str | None = None
     sports_api_key: str | None = None

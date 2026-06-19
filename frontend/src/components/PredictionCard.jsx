@@ -1,7 +1,7 @@
 import React from 'react';
 
 function percent(value) {
-  return `${Math.round(value * 100)}%`;
+  return `${Math.round((value || 0) * 100)}%`;
 }
 
 export default function PredictionCard({ prediction, homeTeam, awayTeam }) {
@@ -19,8 +19,9 @@ export default function PredictionCard({ prediction, homeTeam, awayTeam }) {
         <strong>{percent(prediction.away_win_probability)}</strong>
       </div>
       <p>
-        Predicted score: {homeTeam} {prediction.predicted_home_score}-{prediction.predicted_away_score} {awayTeam}
+        Predicted score: {prediction.predicted_score || `${homeTeam} ${prediction.predicted_home_score}-${prediction.predicted_away_score} ${awayTeam}`}
       </p>
+      {prediction.confidence && <p>Confidence: {prediction.confidence}</p>}
       <p className="muted">{prediction.explanation}</p>
     </div>
   );

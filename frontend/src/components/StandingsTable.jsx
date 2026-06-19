@@ -22,7 +22,10 @@ export default function StandingsTable({ standings }) {
         <tbody>
           {standings.map((row) => (
             <tr key={`${row.group}-${row.team.id}`}>
-              <td>{row.team.name}</td>
+              <td>
+                {row.team.flag_url && <img className="team-logo" src={row.team.flag_url} alt="" />}
+                {row.rank ? `${row.rank}. ` : ''}{row.team.name}
+              </td>
               <td>{row.played}</td>
               <td>{row.won}</td>
               <td>{row.drawn}</td>

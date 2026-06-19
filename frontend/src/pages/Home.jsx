@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import MatchPredictionForm from '../components/MatchPredictionForm.jsx';
 import PredictionResultCard from '../components/PredictionResultCard.jsx';
 import PreviousPredictionsTable from '../components/PreviousPredictionsTable.jsx';
-import TournamentDashboard from '../components/TournamentDashboard.jsx';
+import WorldCupDashboard from '../components/WorldCupDashboard.jsx';
 import { getPredictions, getTeams, predictMatch } from '../services/api.js';
 
 export default function Home() {
@@ -44,7 +44,7 @@ export default function Home() {
 
   return (
     <main>
-      {!initializing && <TournamentDashboard teams={teams} />}
+      {!initializing && <WorldCupDashboard teams={teams} />}
 
       <details className="manual-predictor">
         <summary>Manual prediction tool</summary>

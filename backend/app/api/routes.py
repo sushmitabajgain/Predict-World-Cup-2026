@@ -8,6 +8,7 @@ from app.schemas.match_center import MatchDetailRead, StandingRead, TournamentMa
 from app.schemas.prediction import PredictionRead, PredictionRequest, PredictionResponse
 from app.schemas.team import TeamRead
 from app.services.cache import CacheService
+from app.services.api_football import APIFootballClient
 from app.services.match_center import (
     build_group_standings,
     get_match_detail,
@@ -66,6 +67,59 @@ def match_detail(match_id: int, db: Session = Depends(get_session)) -> MatchDeta
 @router.get("/standings", response_model=list[StandingRead])
 def standings(group: str | None = None, db: Session = Depends(get_session)) -> list[StandingRead]:
     return build_group_standings(db, group=group)
+
+
+@router.get("/api/worldcup/matches")
+def worldcup_matches(
+    stage: str | None = None,
+    group: str | None = None,
+    status: str | None = None,
+    cache: CacheService = Depends(get_cache),
+) -> list[dict[str, object]]:
+    matches = APIFootballClient(cache).get_worldcup_matches()
+    if stage:
+        matches = [match for match in matches if match.get("stage") == stage]
+    if group:
+        matches = [match for match in matches if match.get("group") == group]
+    if status:
+        matches = [match for match in matches if match.get("status") == status]
+    return matches
+
+
+@router.get("/api/worldcup/next-match")
+def worldcup_next_match(
+    db: Session = Depends(get_session),
+    cache: CacheService = Depends(get_cache),
+) -> dict[str, object] | None:
+    return APIFootballClient(cache).get_next_match(db)
+
+
+@router.get("/api/worldcup/live")
+def worldcup_live(cache: CacheService = Depends(get_cache)) -> list[dict[str, object]]:
+    return APIFootballClient(cache).get_live_matches()
+
+
+@router.get("/api/worldcup/match/{fixture_id}")
+def worldcup_match_detail(
+    fixture_id: int,
+    db: Session = Depends(get_session),
+    cache: CacheService = Depends(get_cache),
+) -> dict[str, object]:
+    return APIFootballClient(cache).get_match_details(fixture_id, db)
+
+
+@router.get("/api/worldcup/standings")
+def worldcup_standings(cache: CacheService = Depends(get_cache)) -> list[dict[str, object]]:
+    return APIFootballClient(cache).get_worldcup_standings()
+
+
+@router.get("/api/worldcup/prediction/{fixture_id}")
+def worldcup_prediction(
+    fixture_id: int,
+    db: Session = Depends(get_session),
+    cache: CacheService = Depends(get_cache),
+) -> dict[str, object]:
+    return APIFootballClient(cache).get_prediction(db, fixture_id)
 
 
 @router.post("/predict", response_model=PredictionResponse)

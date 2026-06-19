@@ -429,6 +429,20 @@ th {
   align-items: center;
 }
 
+.teams-line strong,
+.compact-table td:first-child {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+}
+
+.team-logo {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
 .teams-line strong:last-child {
   text-align: right;
 }
@@ -573,6 +587,26 @@ th {
   gap: 12px;
 }
 
+.stats-teams,
+.lineups-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stats-team,
+.lineups-grid section {
+  border: 1px solid #d8ded2;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.countdown {
+  color: #126c55;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
 .unavailable {
   border: 1px solid #d9c693;
   background: #fff9e8;
@@ -591,7 +625,9 @@ th {
   .metrics-grid,
   .dashboard-grid,
   .filter-row,
-  .stats-grid {
+  .stats-grid,
+  .stats-teams,
+  .lineups-grid {
     grid-template-columns: 1fr;
   }
 

@@ -20,7 +20,7 @@ export default function MatchDetailModal({ detail, loading, onClose }) {
             <div className="modal-header">
               <p className="eyebrow">
                 {detail.stage}
-                {detail.group ? ` · Group ${detail.group}` : ''}
+                {detail.group ? ` - ${detail.group}` : ''}
               </p>
               <h2>
                 {detail.home_team?.name || 'TBD'} vs {detail.away_team?.name || 'TBD'}
@@ -42,6 +42,21 @@ export default function MatchDetailModal({ detail, loading, onClose }) {
             <div className="modal-section">
               <h3>Stats</h3>
               <MatchStats stats={detail.stats} />
+            </div>
+            <div className="modal-section">
+              <h3>Lineups</h3>
+              {detail.lineups?.length ? (
+                <div className="lineups-grid">
+                  {detail.lineups.map((lineup) => (
+                    <section key={lineup.team?.id || lineup.team?.name}>
+                      <h4>{lineup.team?.name}</h4>
+                      <p className="muted">{lineup.formation || 'Formation not available yet'}</p>
+                    </section>
+                  ))}
+                </div>
+              ) : (
+                <p className="muted">Lineups not available yet.</p>
+              )}
             </div>
             <div className="modal-section">
               <h3>Group standings</h3>

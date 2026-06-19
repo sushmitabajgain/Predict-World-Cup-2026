@@ -42,6 +42,10 @@ services:
       MLFLOW_TRACKING_URI: http://mlflow:5000
       CORS_ORIGINS: '["http://localhost:3000","http://127.0.0.1:3000","http://localhost:3001","http://127.0.0.1:3001"]'
       SEED_DEMO_DATA: "true"
+      API_FOOTBALL_KEY: ${API_FOOTBALL_KEY:-}
+      API_FOOTBALL_BASE_URL: ${API_FOOTBALL_BASE_URL:-https://v3.football.api-sports.io}
+      API_FOOTBALL_LEAGUE: ${API_FOOTBALL_LEAGUE:-1}
+      API_FOOTBALL_SEASON: ${API_FOOTBALL_SEASON:-2026}
       SPORTS_API_PROVIDER: ${SPORTS_API_PROVIDER:-}
       SPORTS_API_BASE_URL: ${SPORTS_API_BASE_URL:-}
       SPORTS_API_KEY: ${SPORTS_API_KEY:-}

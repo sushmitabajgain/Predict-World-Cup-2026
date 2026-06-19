@@ -74,3 +74,27 @@ def test_match_detail_has_unavailable_event_state(client):
     payload = response.json()
     assert payload["events"] == []
     assert "Timeline events" in payload["unavailable_fields"]
+
+
+def test_worldcup_api_routes_do_not_require_frontend_key(client):
+    response = client.get("/api/worldcup/matches")
+    assert response.status_code == 200
+    assert response.json() == []
+
+    detail = client.get("/api/worldcup/match/12345")
+    assert detail.status_code == 200
+    payload = detail.json()
+    assert payload["fixtureId"] == 12345
+    assert "match info" in payload["unavailableFields"]
+    assert "Data not available yet" in payload["dataQuality"]
+
+
+def test_worldcup_internal_prediction_falls_back_without_api_data(client):
+    response = client.get("/api/worldcup/prediction/12345")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["fixtureId"] == 12345
+    assert payload["homeWinProbability"] == 34.0
+    assert payload["drawProbability"] == 32.0
+    assert payload["awayWinProbability"] == 34.0
+    assert payload["source"] == "internal-standings"
