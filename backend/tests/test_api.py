@@ -47,3 +47,30 @@ def test_prediction_rejects_non_participant(client):
     )
     assert response.status_code == 400
     assert "not a 2026 World Cup participant" in response.json()["detail"]
+
+
+def test_tournament_metadata_endpoint(client):
+    response = client.get("/tournament")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["name"] == "FIFA World Cup 2026"
+    assert "Group Stage" in payload["stages"]
+    assert "Group C" in payload["groups"]
+
+
+def test_matches_endpoint_returns_group_matches(client):
+    response = client.get("/matches?stage=Group%20Stage&group=Group%20C")
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload) == 6
+    teams = {match["home_team"]["name"] for match in payload if match["home_team"]}
+    assert "Brazil" in teams
+
+
+def test_match_detail_has_unavailable_event_state(client):
+    matches = client.get("/matches?stage=Group%20Stage&group=Group%20C").json()
+    response = client.get(f"/matches/{matches[0]['id']}")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["events"] == []
+    assert "Timeline events" in payload["unavailable_fields"]

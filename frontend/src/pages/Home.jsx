@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import MatchPredictionForm from '../components/MatchPredictionForm.jsx';
 import PredictionResultCard from '../components/PredictionResultCard.jsx';
 import PreviousPredictionsTable from '../components/PreviousPredictionsTable.jsx';
+import TournamentDashboard from '../components/TournamentDashboard.jsx';
 import { getPredictions, getTeams, predictMatch } from '../services/api.js';
 
 export default function Home() {
@@ -43,19 +44,23 @@ export default function Home() {
 
   return (
     <main>
-      <section className="workspace">
-        <div className="left-column">
-          {initializing ? (
-            <section className="panel empty-state">Loading teams...</section>
-          ) : (
-            <MatchPredictionForm teams={teams} onSubmit={handlePredict} loading={loading} />
-          )}
-          {error && <p className="error-banner">{error}</p>}
-        </div>
-        <PredictionResultCard prediction={prediction} />
-      </section>
+      {!initializing && <TournamentDashboard teams={teams} />}
 
-      <PreviousPredictionsTable predictions={predictions} />
+      <details className="manual-predictor">
+        <summary>Manual prediction tool</summary>
+        <section className="workspace">
+          <div className="left-column">
+            {initializing ? (
+              <section className="panel empty-state">Loading teams...</section>
+            ) : (
+              <MatchPredictionForm teams={teams} onSubmit={handlePredict} loading={loading} />
+            )}
+            {error && <p className="error-banner">{error}</p>}
+          </div>
+          <PredictionResultCard prediction={prediction} />
+        </section>
+        <PreviousPredictionsTable predictions={predictions} />
+      </details>
     </main>
   );
 }

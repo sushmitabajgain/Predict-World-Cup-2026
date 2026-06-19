@@ -25,6 +25,10 @@ class Settings(BaseSettings):
     real_dataset_path: Path = Path("app/data/international_results.csv")
     training_match_limit: int = 1000
     seed_demo_data: bool = True
+    sports_api_provider: str | None = None
+    sports_api_base_url: str | None = None
+    sports_api_key: str | None = None
+    sports_api_timeout_seconds: float = 10.0
 
     model_config = SettingsConfigDict(
         env_file=".env",

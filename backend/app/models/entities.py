@@ -23,6 +23,25 @@ class Team(Base):
     ratings: Mapped[list["TeamRating"]] = relationship(back_populates="team")
 
 
+class Tournament(Base):
+    __tablename__ = "tournaments"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(160), unique=True, nullable=False)
+    season: Mapped[str] = mapped_column(String(32), nullable=False)
+    host_countries: Mapped[list[str]] = mapped_column(JsonType, nullable=False)
+
+
+class Venue(Base):
+    __tablename__ = "venues"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(160), nullable=False)
+    city: Mapped[str] = mapped_column(String(120), nullable=False)
+    country: Mapped[str] = mapped_column(String(120), nullable=False)
+    timezone: Mapped[str] = mapped_column(String(80), nullable=False)
+
+
 class Match(Base):
     __tablename__ = "matches"
 
@@ -36,6 +55,83 @@ class Match(Base):
     venue: Mapped[str] = mapped_column(String(120), nullable=False)
     venue_type: Mapped[str] = mapped_column(String(24), nullable=False, default="neutral")
     is_neutral: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+
+
+class TournamentMatch(Base):
+    __tablename__ = "tournament_matches"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    tournament_id: Mapped[int] = mapped_column(ForeignKey("tournaments.id"), nullable=False, index=True)
+    api_match_id: Mapped[str | None] = mapped_column(String(120), unique=True)
+    stage: Mapped[str] = mapped_column(String(80), nullable=False, index=True)
+    group: Mapped[str | None] = mapped_column(String(16), index=True)
+    home_team_id: Mapped[int | None] = mapped_column(ForeignKey("teams.id"))
+    away_team_id: Mapped[int | None] = mapped_column(ForeignKey("teams.id"))
+    venue_id: Mapped[int | None] = mapped_column(ForeignKey("venues.id"))
+    kickoff_time_utc: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="scheduled", index=True)
+    home_score: Mapped[int | None] = mapped_column(Integer)
+    away_score: Mapped[int | None] = mapped_column(Integer)
+    extra_time_score: Mapped[str | None] = mapped_column(String(32))
+    penalty_score: Mapped[str | None] = mapped_column(String(32))
+    winner_team_id: Mapped[int | None] = mapped_column(ForeignKey("teams.id"))
+    source: Mapped[str] = mapped_column(String(80), nullable=False, default="manual")
+    last_synced_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+    tournament: Mapped[Tournament] = relationship()
+    home_team: Mapped[Team | None] = relationship(foreign_keys=[home_team_id])
+    away_team: Mapped[Team | None] = relationship(foreign_keys=[away_team_id])
+    winner_team: Mapped[Team | None] = relationship(foreign_keys=[winner_team_id])
+    venue: Mapped[Venue | None] = relationship()
+
+
+class MatchEvent(Base):
+    __tablename__ = "match_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    match_id: Mapped[int] = mapped_column(ForeignKey("tournament_matches.id"), nullable=False, index=True)
+    minute: Mapped[int | None] = mapped_column(Integer)
+    stoppage_time: Mapped[int | None] = mapped_column(Integer)
+    event_type: Mapped[str] = mapped_column(String(40), nullable=False)
+    team_id: Mapped[int | None] = mapped_column(ForeignKey("teams.id"))
+    player_id: Mapped[str | None] = mapped_column(String(120))
+    player_name: Mapped[str | None] = mapped_column(String(160))
+    assist_player_id: Mapped[str | None] = mapped_column(String(120))
+    assist_player_name: Mapped[str | None] = mapped_column(String(160))
+    card_type: Mapped[str | None] = mapped_column(String(40))
+    description: Mapped[str | None] = mapped_column(Text)
+
+    match: Mapped[TournamentMatch] = relationship()
+    team: Mapped[Team | None] = relationship()
+
+
+class MatchStatsSnapshot(Base):
+    __tablename__ = "match_stats_snapshots"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    match_id: Mapped[int] = mapped_column(ForeignKey("tournament_matches.id"), nullable=False, unique=True)
+    stats: Mapped[dict[str, object]] = mapped_column(JsonType, nullable=False)
+    source: Mapped[str] = mapped_column(String(80), nullable=False, default="sports-api")
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
+    match: Mapped[TournamentMatch] = relationship()
+
+
+class MatchPrediction(Base):
+    __tablename__ = "match_predictions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    match_id: Mapped[int] = mapped_column(ForeignKey("tournament_matches.id"), nullable=False, unique=True, index=True)
+    home_win_probability: Mapped[float] = mapped_column(Float, nullable=False)
+    draw_probability: Mapped[float] = mapped_column(Float, nullable=False)
+    away_win_probability: Mapped[float] = mapped_column(Float, nullable=False)
+    predicted_home_score: Mapped[int] = mapped_column(Integer, nullable=False)
+    predicted_away_score: Mapped[int] = mapped_column(Integer, nullable=False)
+    confidence: Mapped[str] = mapped_column(String(24), nullable=False)
+    explanation: Mapped[str] = mapped_column(Text, nullable=False)
+    generated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
+    match: Mapped[TournamentMatch] = relationship()
 
 
 class TeamRating(Base):

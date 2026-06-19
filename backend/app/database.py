@@ -8,6 +8,7 @@ from sqlalchemy.pool import StaticPool
 from app.config import get_settings
 from app.models.entities import Base, Match, Team, TeamRating
 from app.services.real_dataset import seed_real_dataset
+from app.services.tournament_seed import seed_tournament_shell
 
 settings = get_settings()
 
@@ -35,10 +36,12 @@ def init_db() -> None:
             real_rows_inserted = seed_real_dataset(db, settings.real_dataset_path)
         if settings.seed_demo_data and not real_rows_inserted and not db.scalar(select(Match).limit(1)):
             seed_demo_data(db)
+        seed_tournament_shell(db)
 
 
 DEMO_TEAMS = [
     ("Brazil", "BRA", "CONMEBOL", 2045, 5, 1784.1),
+    ("Haiti", "HAI", "CONCACAF", 1580, 82, 1288.0),
     ("Argentina", "ARG", "CONMEBOL", 2060, 1, 1889.0),
     ("France", "FRA", "UEFA", 2020, 2, 1851.9),
     ("England", "ENG", "UEFA", 1980, 4, 1812.3),

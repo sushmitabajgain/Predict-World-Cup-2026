@@ -26,3 +26,28 @@ export function predictMatch(payload) {
 export function getPredictions() {
   return request('/predictions');
 }
+
+export function getTournament() {
+  return request('/tournament');
+}
+
+export function getMatches(filters = {}) {
+  const params = new URLSearchParams();
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value) params.set(key, value);
+  });
+  const query = params.toString();
+  return request(`/matches${query ? `?${query}` : ''}`);
+}
+
+export function getNextMatch() {
+  return request('/matches/next');
+}
+
+export function getMatchDetail(id) {
+  return request(`/matches/${id}`);
+}
+
+export function getStandings(group) {
+  return request(`/standings${group ? `?group=${encodeURIComponent(group)}` : ''}`);
+}
